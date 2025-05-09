@@ -4,7 +4,7 @@
       "main": "src/rentmase_backend/backend.mo",
       "type": "motoko"
     },
-    "old" : {
+    "old": {
       "main": "src/rentmase_backend/old.mo",
       "type": "motoko"
     },
@@ -14,11 +14,26 @@
       "wasm": "https://download.dfinity.systems/ic/2e3589427cd9648d4edaebc1b96b5daf8fdd94d8/canisters/ic-icrc1-ledger.wasm.gz"
     },
     "rentmase_frontend": {
+      "dependencies": [
+        "rentmase_backend",
+        "old"
+      ],
       "source": [
         "src/rentmase_frontend/dist"
       ],
       "type": "assets",
       "workspace": "rentmase_frontend"
+    },
+    "internet_identity": {
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "frontend": {},
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "type": "custom",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
     }
   },
   "defaults": {

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/Context';
 import styled from 'styled-components';
+import { Props } from './types';
 // Direct URL paths for images in the public folder
 const internetIdentityIcon = "/images/InternetIdentity.svg";
 const nfidIcon = "/images/NFID.svg";
@@ -80,12 +81,16 @@ const WalletOption = styled.div`
   }
 `;
 
-const LoginModal = ({ openModal, setOpenModal }) => {
+const LoginModal: React.FC<Props> = ({ openModal, setOpenModal }) => {
   const handleClose = () => setOpenModal(false);
-
+  const auth = useAuth();
+  if (!auth) {
+    console.error("AuthContext not found. Make sure you're wrapping your app in <AuthProvider />.");
+    return null; // or show a fallback UI
+  }
   if (!openModal) return null;
 
-  const { login, nfidlogin, isAuthenticated } = useAuth();
+  const { login, nfidlogin, isAuthenticated } = auth;
 
   useEffect(() => {
     if (isAuthenticated) {

@@ -24,7 +24,7 @@ actor class Rentmase() = this {
 
     var signupRewardAmnt = 100;
     var referralRewardAmnt = 50;
-    var reviewReward = 30;
+    ignore var _reviewReward = 30;
     var socialShareReward = 50;
     let tokenCanister = "fr2qs-haaaa-aaaai-actya-cai";
     let tokenDecimals = 100_000_000;
@@ -570,7 +570,7 @@ actor class Rentmase() = this {
                             _user with
                             rewards = {
                                 _user.rewards with
-                                balance = _user.rewards.balance - amount;
+                                balance = Nat.sub(_user.rewards.balance, amount);
                             };
                         };
                         users.put(caller, updatedUser);

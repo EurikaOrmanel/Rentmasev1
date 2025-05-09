@@ -1,10 +1,11 @@
 import styled from 'styled-components';
-import {  Rewards } from '../../../declarations/rentmase_backend/rentmase_backend.did';
+import { Rewards } from '../../../declarations/rentmase_backend/rentmase_backend.did';
 import { FC, useEffect, useState } from 'react';
 import { tokensPerReward } from '../constants';
 import { toast } from 'react-toastify';
 import { Principal } from '@dfinity/principal';
 import { useAuth } from '../hooks/Context';
+import { Props } from './types';
 
 const ModalBackdrop = styled.div`
   position: fixed;
@@ -76,15 +77,15 @@ const Button = styled.button`
 `;
 
 
-type Props = {
-    openModal: boolean;
-    setOpenModal: (open: boolean) => void;
-}
-
 
 const RedeemTokens: FC<Props> = ({ openModal, setOpenModal }) => {
     const handleClose = () => setOpenModal(false);
-    const { user} = useAuth();
+    const auth = useAuth();
+    if (!auth) {
+        console.error("AuthContext not found. Make sure you're wrapping your app in <AuthProvider />.");
+        return null; // or show a fallback UI
+    }
+    const { user } = auth;
     const [rewardAmount, setRewardAmount] = useState("")
     const [recivingAddress, setRecivingAddress] = useState<string | null>(null);
     const [redeemLoading, setRedeemLoading] = useState(false);
@@ -96,7 +97,7 @@ const RedeemTokens: FC<Props> = ({ openModal, setOpenModal }) => {
             toast.error("Please fill all fields");
             return;
         }
-        if (parseInt(rewardAmount) > user.rewards.balance) {
+        if (parseInt(rewardAmount) > user?.rewards.balance) {
             toast.error("You don't have enough rewards to redeem, Please enter a valid amount");
             return;
         }
@@ -140,7 +141,7 @@ const RedeemTokens: FC<Props> = ({ openModal, setOpenModal }) => {
                 <div className="">
                     <h2>Redeem Tokens</h2>
                     <h4>
-                        Rewards Worth {Number(user.rewards.balance)} xRem Tokens
+                        Rewards Worth {Number(user?.rewards.balance)} xRem Tokens
                     </h4>
                     <RewardAmountInput type="number"
                         value={rewardAmount}

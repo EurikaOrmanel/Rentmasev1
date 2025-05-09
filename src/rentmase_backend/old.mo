@@ -23,7 +23,7 @@ actor class Rentmase() = this {
 
     var signupRewardAmnt = 100;
     var referralRewardAmnt = 50;
-    var reviewReward = 30;
+    ignore var _reviewReward = 30;
     var socialShareReward = 50;
     let tokenCanister = "fr2qs-haaaa-aaaai-actya-cai";
     let tokenDecimals = 100_000_000;
@@ -33,12 +33,10 @@ actor class Rentmase() = this {
 
     stable var users = List.nil<User>();
     stable var transactions = List.nil<InternalTxn>();
-    stable var reviews = List.nil<Types.Review>();
+    stable var _reviews = List.nil<Types.Review>();
     stable var rewards = List.nil<Types.Rewards>();
     stable var socialShareRequests = List.nil<Types.SocialShareRewardRequest>();
     stable var faucets = List.nil<Types.FaucetTxn>();
-
-    
 
     /***************************
      * FAUCET
@@ -428,9 +426,19 @@ actor class Rentmase() = this {
                         return #err(handleTransferError(err));
                     };
                     case (#Ok(_)) {
+                        if (_userRewards.balance <= amount) {
+                            // If the user has no balance left, remove them from the rewards list
+                            rewards := List.filter<Types.Rewards>(
+                                rewards,
+                                func(r : Types.Rewards) : Bool {
+                                    return r.user != _userRewards.user;
+                                },
+                            );
+                            return #ok(());
+                        };
                         let updatedRewards : Types.Rewards = {
                             _userRewards with
-                            balance = _userRewards.balance - amount;
+                            balance = Nat.sub(_userRewards.balance, amount)
                         };
                         func updateRewards(r : Types.Rewards) : Types.Rewards {
                             if (r.user == _userRewards.user) {
