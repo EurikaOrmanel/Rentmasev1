@@ -6,67 +6,72 @@ import { Rewards, RewardType } from '../../../../declarations/rentmase_backend/r
 import RedeemTokens from '../../components/RedeemTokens';
 
 const RewardsPage = () => {
-    const { newBackendActor, user } = useAuth();
-    const [openModal, setOpenModal] = useState(false);
+  const auth = useAuth();
+  if (!auth) {
+    console.error("AuthContext not found. Make sure you're wrapping your app in <AuthProvider />.");
+    return null; // or show a fallback UI
+  }
+  const { newBackendActor, user } = auth;
+  const [openModal, setOpenModal] = useState(false);
 
-    return (
-        <>
-            {!user && (
-                <LoadingContainer>
-                    <p>Loading...</p>
-                </LoadingContainer>
-            )}
-            {user && <RewardsContainer>
-                <RewardsTitle>
-                    Your Rewards, {user.username}
-                </RewardsTitle>
-                <StatsSection>
-                    <StatBox>
-                        <StatLabel>Total Rewards Earned</StatLabel>
-                        <StatValue>{Number(user.rewards.totalAmountEarned)} $Rent</StatValue>
-                    </StatBox>
-                    <StatBox>
-                        <StatLabel>Current Balance</StatLabel>
-                        <StatValue>{Number(user.rewards.balance)} $Rent</StatValue>
-                    </StatBox>
-                </StatsSection>
+  return (
+    <>
+      {!user && (
+        <LoadingContainer>
+          <p>Loading...</p>
+        </LoadingContainer>
+      )}
+      {user && <RewardsContainer>
+        <RewardsTitle>
+          Your Rewards, {user.username}
+        </RewardsTitle>
+        <StatsSection>
+          <StatBox>
+            <StatLabel>Total Rewards Earned</StatLabel>
+            <StatValue>{Number(user.rewards.totalAmountEarned)} $Rent</StatValue>
+          </StatBox>
+          <StatBox>
+            <StatLabel>Current Balance</StatLabel>
+            <StatValue>{Number(user.rewards.balance)} $Rent</StatValue>
+          </StatBox>
+        </StatsSection>
 
-                <RewardCategoriesTitle>Reward Categories</RewardCategoriesTitle>
-                <RewardsTable>
-                    <TableHead>
-                        <tr>
-                            <TableHeader>Reward Type</TableHeader>
-                            <TableHeader>Total Earned</TableHeader>
-                        </tr>
-                    </TableHead>
-                    <TableBody>
-                        <TableRow>
-                            <TableData>Social Share</TableData>
-                            <TableData>{Number(user.rewards.socialShare.amount)} $Rent</TableData>
-                        </TableRow>
-                        <TableRow>
-                            <TableData>Review Reward</TableData>
-                            <TableData>{Number(user.rewards.review.amount)} $Rent</TableData>
-                        </TableRow>
-                        <TableRow>
-                            <TableData>Signup Bonus</TableData>
-                            <TableData>{Number(user.rewards.signup.amount)} $Rent</TableData>
-                        </TableRow>
-                        <TableRow>
-                            <TableData>Referral Reward</TableData>
-                            <TableData>{Number(user.rewards.referral.amount)} $Rent</TableData>
-                        </TableRow>
-                    </TableBody>
-                </RewardsTable>
+        <RewardCategoriesTitle>Reward Categories</RewardCategoriesTitle>
+        <RewardsTable>
+          <TableHead>
+            <tr>
+              <TableHeader>Reward Type</TableHeader>
+              <TableHeader>Total Earned</TableHeader>
+            </tr>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableData>Social Share</TableData>
+              <TableData>{Number(user.rewards.socialShare.amount)} $Rent</TableData>
+            </TableRow>
+            <TableRow>
+              <TableData>Review Reward</TableData>
+              <TableData>{Number(user.rewards.review.amount)} $Rent</TableData>
+            </TableRow>
+            <TableRow>
+              <TableData>Signup Bonus</TableData>
+              <TableData>{Number(user.rewards.signup.amount)} $Rent</TableData>
+            </TableRow>
+            <TableRow>
+              <TableData>Referral Reward</TableData>
+              <TableData>{Number(user.rewards.referral.amount)} $Rent</TableData>
+            </TableRow>
+          </TableBody>
+        </RewardsTable>
 
-                <RedeemButton
-                    disabled
-                    onClick={() => setOpenModal(true)}
-                >Redeem Your Rewards</RedeemButton>
-            </RewardsContainer>}
-            {openModal && <RedeemTokens {...{ openModal, setOpenModal }} />}
-        </>
-    );
+        <RedeemButton
+          disabled
+          onClick={() => setOpenModal(true)}
+        >Redeem Your Rewards</RedeemButton>
+      </RewardsContainer>}
+      {openModal && <RedeemTokens {...{ openModal, setOpenModal }} />}
+    </>
+  );
 };
 
 export default RewardsPage;

@@ -89,7 +89,12 @@ const Title = styled.h1`
 `;
 
 const Register = () => {
-  const { isAuthenticated, newBackendActor, user, setUser } = useAuth();
+  const auth = useAuth();
+  if (!auth) {
+    console.error("AuthContext not found. Make sure you're wrapping your app in <AuthProvider />.");
+    return null; // or show a fallback UI
+  }
+  const { isAuthenticated, newBackendActor, user, setUser } = auth;
   const [inviteCode, setInviteCode] = useState('');
   const location = useLocation();
   const navigate = useNavigate();

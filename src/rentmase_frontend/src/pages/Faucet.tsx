@@ -6,101 +6,106 @@ import { useAuth } from '../hooks/Context';
 import { toast } from 'react-toastify';
 
 const Faucet = () => {
-    const { tokenBalance } = useSelector((state: RootState) => state.app);
-    const [balance, setBalance] = useState(tokenBalance);
-    const { tokenCanister, newBackendActor, identity } = useAuth();
-    const [claiming, setClaiming] = useState(false);
-    // const [isEligible, setIsEligible] = useState(false);
-    // const [timeRemaining, setTimeRemaining] = useState('');
+  const auth = useAuth();
+  if (!auth) {
+    console.error("AuthContext not found. Make sure you're wrapping your app in <AuthProvider />.");
+    return null; // or show a fallback UI
+  }
+  const { tokenBalance } = useSelector((state: RootState) => state.app);
+  const [balance, setBalance] = useState(tokenBalance);
+  const { tokenCanister, newBackendActor, identity } = auth;
+  const [claiming, setClaiming] = useState(false);
+  // const [isEligible, setIsEligible] = useState(false);
+  // const [timeRemaining, setTimeRemaining] = useState('');
 
-    // useEffect(() => {
-    //     const checkEligibility = () => {
-    //         const now = new Date().getTime();
-    //         const difference = now - lastClaimed;
+  // useEffect(() => {
+  //     const checkEligibility = () => {
+  //         const now = new Date().getTime();
+  //         const difference = now - lastClaimed;
 
-    //         // 24 hours in milliseconds
-    //         const twentyFourHours = 24 * 60 * 60 * 1000;
+  //         // 24 hours in milliseconds
+  //         const twentyFourHours = 24 * 60 * 60 * 1000;
 
-    //         if (difference >= twentyFourHours) {
-    //             setIsEligible(true);
-    //             setTimeRemaining('');
-    //         } else {
-    //             setIsEligible(false);
+  //         if (difference >= twentyFourHours) {
+  //             setIsEligible(true);
+  //             setTimeRemaining('');
+  //         } else {
+  //             setIsEligible(false);
 
-    //             // Calculate time remaining
-    //             const timeLeft = twentyFourHours - difference;
-    //             const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-    //             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-    //             const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+  //             // Calculate time remaining
+  //             const timeLeft = twentyFourHours - difference;
+  //             const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+  //             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+  //             const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-    //             setTimeRemaining(
-    //                 `${hours}h ${minutes}m ${seconds}s until next claim`
-    //             );
-    //         }
-    //     };
+  //             setTimeRemaining(
+  //                 `${hours}h ${minutes}m ${seconds}s until next claim`
+  //             );
+  //         }
+  //     };
 
-    //     // Run on component mount and every second to update the countdown
-    //     checkEligibility();
-    //     const interval = setInterval(checkEligibility, 1000);
+  //     // Run on component mount and every second to update the countdown
+  //     checkEligibility();
+  //     const interval = setInterval(checkEligibility, 1000);
 
-    //     return () => clearInterval(interval); // Cleanup
-    // }, [lastClaimed]);
+  //     return () => clearInterval(interval); // Cleanup
+  // }, [lastClaimed]);
 
-    useEffect(() => {
-        if (tokenCanister && newBackendActor) {
-            getBalance();
-        }
-    }, [tokenCanister, newBackendActor]);
+  useEffect(() => {
+    if (tokenCanister && newBackendActor) {
+      getBalance();
+    }
+  }, [tokenCanister, newBackendActor]);
 
-    const getBalance = async () => {
-        const balance = await tokenCanister.icrc1_balance_of({
-            owner: identity.getPrincipal(),
-            subaccount: [],
-        });
+  const getBalance = async () => {
+    const balance = await tokenCanister.icrc1_balance_of({
+      owner: identity.getPrincipal(),
+      subaccount: [],
+    });
 
-        setBalance({
-            balance: Number(balance),
-            principal: identity.getPrincipal().toString(),
-        });
-    };
+    setBalance({
+      balance: Number(balance),
+      principal: identity.getPrincipal().toString(),
+    });
+  };
 
 
-    const handleClaim = async () => {
-        setClaiming(true);
-        const res = await newBackendActor.getTestTokens();
-        if ("ok" in res) {
-            setClaiming(false);
-            getBalance();
-            toast.success("Test tokens claimed successfully!");
-        } else if ("err" in res) {
-            setClaiming(false);
-            toast.error(res.err);
-        }
-    };
+  const handleClaim = async () => {
+    setClaiming(true);
+    const res = await newBackendActor.getTestTokens();
+    if ("ok" in res) {
+      setClaiming(false);
+      getBalance();
+      toast.success("Test tokens claimed successfully!");
+    } else if ("err" in res) {
+      setClaiming(false);
+      toast.error(res.err);
+    }
+  };
 
-    return (
-        <FaucetContainer>
-            <FaucetTitle>Faucet - Get Free Test Tokens</FaucetTitle>
+  return (
+    <FaucetContainer>
+      <FaucetTitle>Faucet - Get Free Test Tokens</FaucetTitle>
 
-            <BalanceSection>
-                <BalanceLabel>Current Balance</BalanceLabel>
-                <BalanceValue>
-                    {balance ? <span>{(Number(balance.balance) / 1e8).toFixed(3)}</span> : 0} {" "}
-                    $xRem</BalanceValue>
-            </BalanceSection>
+      <BalanceSection>
+        <BalanceLabel>Current Balance</BalanceLabel>
+        <BalanceValue>
+          {balance ? <span>{(Number(balance.balance) / 1e8).toFixed(3)}</span> : 0} {" "}
+          $xRem</BalanceValue>
+      </BalanceSection>
 
-            {/* {!isEligible && <CountdownText>{timeRemaining}</CountdownText>} */}
+      {/* {!isEligible && <CountdownText>{timeRemaining}</CountdownText>} */}
 
-            {/* <ClaimButton disabled={!isEligible} isEligible={isEligible}>
+      {/* <ClaimButton disabled={!isEligible} isEligible={isEligible}>
                 {isEligible ? 'Claim Test Tokens' : 'Claim Not Available'}
             </ClaimButton> */}
-            <ClaimButton
-                onClick={handleClaim}
-                isEligible={true}>
-                {claiming ? 'Claiming...' : 'Claim Test Tokens'}
-            </ClaimButton>
-        </FaucetContainer>
-    );
+      <ClaimButton
+        onClick={handleClaim}
+        isEligible={true}>
+        {claiming ? 'Claiming...' : 'Claim Test Tokens'}
+      </ClaimButton>
+    </FaucetContainer>
+  );
 };
 
 export default Faucet;

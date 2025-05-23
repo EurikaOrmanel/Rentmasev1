@@ -24,7 +24,7 @@ export const network = process.env.DFX_NETWORK || "local";
 const localhost = "http://localhost:4943";
 const host = "https://icp0.io";
 
-interface wAuthContextType {
+interface AuthContextType {
   isAuthenticated: boolean | null;
   oldBackendActor: ActorSubclass<OLDSERVICE> | null;
   tokenCanister: ActorSubclass<TOKENSERVICE> | null;

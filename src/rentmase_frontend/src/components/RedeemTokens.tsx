@@ -83,7 +83,7 @@ const RedeemTokens: FC<Props> = ({ openModal, setOpenModal }) => {
     const auth = useAuth();
     if (!auth) {
         console.error("AuthContext not found. Make sure you're wrapping your app in <AuthProvider />.");
-        return null; // or show a fallback UI
+        return null;
     }
     const { user } = auth;
     const [rewardAmount, setRewardAmount] = useState("")
